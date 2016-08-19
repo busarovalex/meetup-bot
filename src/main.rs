@@ -1,3 +1,5 @@
+#![feature(try_from)]
+
 extern crate telegram_bot;
 extern crate regex;
 
@@ -5,6 +7,9 @@ mod meetup;
 mod command;
 mod manager;
 mod bot;
+mod message;
+mod chatroom;
+mod error;
 
 use telegram_bot::*;
 
