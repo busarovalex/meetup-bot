@@ -25,10 +25,10 @@ fn main() {
 fn listen(api: Api) -> Result<()> {
     let mut listener = api.listener(ListeningMethod::LongPoll(None));
     // Fetch new updates via long poll method
-    let mut bot = bot::Bot::new();
+    let mut bot = bot::Bot::new(&api);
     let res = listener.listen(|u| {
         if let Some(message) = u.message {
-            bot.process_message(&api, message);
+            bot.process_message(message);
         }
         Ok(ListeningAction::Continue)
     });
