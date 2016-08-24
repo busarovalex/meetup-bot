@@ -1,21 +1,21 @@
 use telegram_bot::*;
 
-use ::meetup::MeetupList;
+use ::meetup::Meetup;
 
 pub struct ChatRoom {
     id: Integer,
-    meetup_list: MeetupList
+    meetup: Meetup
 }
 
 impl ChatRoom {
     pub fn new(id: Integer) -> ChatRoom {
         ChatRoom {
             id: id,
-            meetup_list: MeetupList::new()
+            meetup: Meetup::new()
         }
     }
     
-    pub fn meetup_list(&mut self) -> &mut MeetupList {
-        &mut self.meetup_list
+    pub fn meetup(&mut self) -> &mut Meetup {
+        &mut self.meetup
     }
 }

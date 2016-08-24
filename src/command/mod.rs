@@ -4,11 +4,9 @@ use maybe_from::*;
 use chatroom::*;
 
 use self::meet_at::*;
-use self::list_meetups::*;
 use self::meet_now::*;
 
 mod meet_at;
-mod list_meetups;
 mod meet_now;
 
 pub trait Command {
@@ -16,8 +14,7 @@ pub trait Command {
 }
 
 pub fn parse_command(text: &str) -> Option<Box<Command>> {
-    ListMeetups::maybe_from(text).map(to_boxed_command)
-        .or_else(||MeetNow::maybe_from(text).map(to_boxed_command))
+    MeetNow::maybe_from(text).map(to_boxed_command)
         .or_else(||MeetAt::maybe_from(text).map(to_boxed_command))
 }
 
