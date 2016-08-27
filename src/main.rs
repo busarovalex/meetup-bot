@@ -9,7 +9,6 @@ mod command;
 mod manager;
 mod bot;
 mod message;
-mod chatroom;
 mod error;
 mod send;
 mod maybe_from;

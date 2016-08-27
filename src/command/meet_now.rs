@@ -2,7 +2,6 @@ use regex::Regex;
 use telegram_bot::User;
 
 use ::maybe_from::*;
-use chatroom::*;
 use meetup::*;
 
 use super::Command;
@@ -34,8 +33,7 @@ impl<'r> MaybeFrom<&'r str> for MeetNow {
 }
 
 impl Command for MeetNow {
-    fn execute(&self, user: User, chat_room: &mut ChatRoom) -> String {
-        let mut meetup = chat_room.meetup();
+    fn execute(&self, user: User, meetup: &mut Meetup) -> String {
         meetup.vote(user, Vote::now());
         format!("Вы хотите устроить встречу СЕЙЧАС")
     }

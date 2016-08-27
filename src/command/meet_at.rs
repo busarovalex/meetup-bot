@@ -2,7 +2,7 @@ use regex::Regex;
 use time::Tm;
 
 use ::maybe_from::*;
-use chatroom::*;
+use meetup::*;
 
 use super::Command;
 
@@ -44,7 +44,7 @@ impl<'r> MaybeFrom<&'r str> for MeetAt {
 }
 
 impl Command for MeetAt {
-    fn execute(&self, _: User, _: &mut ChatRoom) -> String {
+    fn execute(&self, _: User, _: &mut Meetup) -> String {
         format!("Вы хотите устроить встречу В")
     }
 }

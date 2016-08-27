@@ -1,7 +1,7 @@
 use telegram_bot::User;
 
 use maybe_from::*;
-use chatroom::*;
+use meetup::*;
 
 use self::meet_at::*;
 use self::meet_now::*;
@@ -10,7 +10,7 @@ mod meet_at;
 mod meet_now;
 
 pub trait Command {
-    fn execute(&self, user: User, chat_room: &mut ChatRoom) -> String;
+    fn execute(&self, user: User, chat_room: &mut Meetup) -> String;
 }
 
 pub fn parse_command(text: &str) -> Option<Box<Command>> {
