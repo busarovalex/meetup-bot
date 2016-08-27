@@ -44,7 +44,7 @@ impl<'r> MaybeFrom<&'r str> for MeetAt {
 }
 
 impl Command for MeetAt {
-    fn execute(&self, _: User, _: &mut Meetup) -> String {
-        format!("Вы хотите устроить встречу В")
+    fn execute(&self, user: User, meetup: &mut Meetup) -> String {
+        meetup.vote(user, Vote::at(self.at))
     }
 }

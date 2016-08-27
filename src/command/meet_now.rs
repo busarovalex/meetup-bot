@@ -34,7 +34,6 @@ impl<'r> MaybeFrom<&'r str> for MeetNow {
 
 impl Command for MeetNow {
     fn execute(&self, user: User, meetup: &mut Meetup) -> String {
-        meetup.vote(user, Vote::now());
-        format!("Вы хотите устроить встречу СЕЙЧАС")
+        meetup.vote(user, Vote::now())
     }
 }
