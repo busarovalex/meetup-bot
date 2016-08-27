@@ -24,6 +24,7 @@ impl<'r> Bot<'r> {
     pub fn process_message(&mut self, msg: TelegramMessage) {
         match Message::try_from(msg) {
             Ok(message) => {
+                debug!("Ok message");
                 if let Some(command) = message.command {
                     let mut chat_room = self.manager.create_or_find(message.chat_id);
                     let payload = command.execute(message.user, chat_room);
@@ -31,6 +32,7 @@ impl<'r> Bot<'r> {
                 }
             },
             Err(error) => {
+                debug!("Err message: {:?}", &error);
                 self.send_error_message(error);
             }
         }

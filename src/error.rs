@@ -1,15 +1,18 @@
 use telegram_bot::*;
 
+#[derive(Debug, Clone)]
 pub struct MeetupError {
     pub destination: ErrorDestination,
     pub error_type: ErrorType
 }
 
+#[derive(Debug, Clone)]
 pub enum ErrorType {
     ChatIsNotGroup,
     NotATextMessage
 }
 
+#[derive(Debug, Clone)]
 pub struct ErrorDestination {
     pub chat_id: Integer,
     pub user: User

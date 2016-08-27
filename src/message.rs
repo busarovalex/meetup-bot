@@ -29,7 +29,8 @@ impl TryFrom<TelegramMessage> for Message {
                     command: command
                 })
             },
-            (Chat::Group{..}, _) => Err(MeetupError::chat_is_not_group(ErrorDestination::new(raw.from, chat_id))),
+            (Chat::Private{..}, _) => Err(MeetupError::chat_is_not_group(ErrorDestination::new(raw.from, chat_id))),
+            (Chat::Channel{..}, _) => Err(MeetupError::chat_is_not_group(ErrorDestination::new(raw.from, chat_id))),
             (_, _) => Err(MeetupError::not_a_text_message(ErrorDestination::new(raw.from, chat_id)))
         }
     }
