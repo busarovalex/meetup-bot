@@ -11,3 +11,11 @@ pub struct IncomingMessage {
 pub struct OutgoingMessage {
     pub text: String
 }
+
+impl OutgoingMessage {
+    pub fn with_text(text: String) -> OutgoingMessage {
+        OutgoingMessage {
+            text: text
+        }
+    }
+}

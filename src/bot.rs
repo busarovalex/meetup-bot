@@ -18,7 +18,9 @@ pub struct Bot<'r> {
 
 impl<'r> Bot<'r> {
     pub fn new(api: &'r Api) -> Bot<'r> {
-        let handlers = vec![];
+        let handlers = vec![
+            Box::new(VoteHandler::new()) as Box<Handler>
+        ];
         Bot {
             api: api,
             manager: Manager::new(),
@@ -34,7 +36,7 @@ impl<'r> Bot<'r> {
                 chat_room.add_user_if_not_present(&message.user);
                 let incoming_message = message.into();
                 for handler in &self.handlers {
-                    if let Some(outgoing_message) = handler.handle(&incoming_message, &chat_room) {
+                    if let Some(outgoing_message) = handler.handle(&incoming_message, &mut chat_room) {
                         self.api.send((chat_room.id(), outgoing_message));
                     }
                 }

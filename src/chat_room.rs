@@ -1,3 +1,5 @@
+use typemap::*;
+
 use model::*;
 
 use std::collections::HashMap;
@@ -5,7 +7,8 @@ use std::collections::HashMap;
 #[derive(Debug)]
 pub struct ChatRoom {
     id: ChatRoomId,
-    users: HashMap<UserId, User>,
+    pub users: HashMap<UserId, User>,
+    pub type_map: DebugMap
 }
 
 pub type ChatRoomId = Id<i64, ChatRoom>;
@@ -16,6 +19,7 @@ impl ChatRoom {
         ChatRoom {
             id: id,
             users: HashMap::new(),
+            type_map: TypeMap::custom()
         }
     }
 

@@ -5,9 +5,8 @@ extern crate regex;
 extern crate chrono;
 #[macro_use] extern crate log;
 extern crate env_logger;
+extern crate typemap;
 
-// mod meetup;
-// mod command;
 mod manager;
 mod bot;
 mod message;
