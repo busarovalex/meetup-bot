@@ -12,7 +12,6 @@ mod bot;
 mod message;
 mod error;
 mod send;
-mod maybe_from;
 mod handler;
 mod model;
 mod chat_room;
