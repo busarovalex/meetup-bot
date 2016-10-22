@@ -37,8 +37,7 @@ impl Handler for VoteHandler {
             if let Some(already_existing_vote) = vote_results.get_vote(user_id) {
                 return Some(Self::already_voted(&message.from, already_existing_vote));
             }
-            vote_results.add_vote(user_id, desired_vote, &chat_room.users);
-            
+            return vote_results.add_vote(user_id, desired_vote, &chat_room.users);
         }
         None
     }
