@@ -11,6 +11,6 @@ name = "meetup-bot"
 [dependencies]
 telegram-bot = "0.4"
 regex = "0.1.73"
-time = "0.1"
+chrono = "0.2"
 env_logger = "*"
 log = "*"

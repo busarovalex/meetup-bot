@@ -1,29 +1,27 @@
-use telegram_bot::{Integer};
-
-use ::meetup::*;
+use chat_room::*;
 
 use std::collections::HashMap;
 
 pub struct Manager {
-    meetups: HashMap<Integer, Meetup>
+    rooms: HashMap<ChatRoomId, ChatRoom>
 }
 
 impl Manager {
     pub fn new() -> Manager {
         Manager {
-            meetups: HashMap::new()
+            rooms: HashMap::new()
         }
     }
     
-    pub fn create_or_find(&mut self, chat_id: Integer) -> &mut Meetup {
-        if self.meetups.contains_key(&chat_id) {
-            return match self.meetups.get_mut(&chat_id) {
+    pub fn create_or_find(&mut self, chat_room_id: ChatRoomId) -> &mut ChatRoom {
+        if self.rooms.contains_key(&chat_room_id) {
+            return match self.rooms.get_mut(&chat_room_id) {
                 Some(meetup) => meetup,
                 None => unreachable!()
             }
         }  
         
-        self.meetups.insert(chat_id, Meetup::new());
-        self.meetups.get_mut(&chat_id).unwrap()
+        self.rooms.insert(chat_room_id, ChatRoom::new(chat_room_id));
+        self.rooms.get_mut(&chat_room_id).unwrap()
     }
 }

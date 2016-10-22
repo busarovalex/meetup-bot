@@ -1,4 +1,6 @@
 use telegram_bot::{Api, Integer};
+use model::*;
+use chat_room::*;
 
 use ::error::*;
 
@@ -34,5 +36,15 @@ impl Payload for (Integer, String) {
     
     fn text(&self) -> String {
         self.1.clone()
+    }
+}
+
+impl Payload for (ChatRoomId, OutgoingMessage) {
+    fn chat(&self) -> Integer {
+        *self.0
+    }
+    
+    fn text(&self) -> String {
+        self.1.text.clone()
     }
 }

@@ -2,18 +2,21 @@
 
 extern crate telegram_bot;
 extern crate regex;
-extern crate time;
+extern crate chrono;
 #[macro_use] extern crate log;
 extern crate env_logger;
 
-mod meetup;
-mod command;
+// mod meetup;
+// mod command;
 mod manager;
 mod bot;
 mod message;
 mod error;
 mod send;
 mod maybe_from;
+mod handler;
+mod model;
+mod chat_room;
 
 use telegram_bot::*;
 
@@ -23,7 +26,7 @@ fn main() {
     info!("getMe: {:?}", api.get_me());
     let res = listen(api);
     if let Err(e) = res {
-        println!("An error occured: {}", e);
+        error!("An error occured: {}", e);
     }
 }
 
@@ -33,7 +36,7 @@ fn listen(api: Api) -> Result<()> {
     let mut bot = bot::Bot::new(&api);
     let res = listener.listen(|u| {
         if let Some(message) = u.message {
-            debug!("Message {:?}", &message);
+            debug!("Raw message: {:?}", &message);
             bot.process_message(message);
         }
         Ok(ListeningAction::Continue)
