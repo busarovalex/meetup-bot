@@ -1,6 +1,6 @@
 use super::Id;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct User {
     pub id: UserId,
     pub first_name: String,

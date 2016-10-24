@@ -26,11 +26,23 @@ impl VoteHandler {
         let text = format!("{} уже голосовал: {}", user.first_name, vote.description());
         OutgoingMessage::with_text(text)
     }
+
+    fn insert_or_find_vote_results<'r>(type_map: &'r mut DebugMap) -> &'r mut VoteResults {
+        if type_map.contains::<VoteResults>() {
+            return match type_map.get_mut::<VoteResults>() {
+                Some(vote_results) => vote_results,
+                None => unreachable!()
+            }
+        }  
+        
+        type_map.insert::<VoteResults>(VoteResults::new());
+        type_map.get_mut::<VoteResults>().unwrap()
+    }
 }
 
 impl Handler for VoteHandler {
     fn handle(&self, message: &IncomingMessage, chat_room: &mut ChatRoom) -> Option<OutgoingMessage> {
-        let vote_results = chat_room.type_map.get_mut::<VoteResults>().unwrap();
+        let vote_results = Self::insert_or_find_vote_results(&mut chat_room.type_map);
         vote_results.check_for_possible_reset();
         let user_id = message.from.id;
         if let Some(desired_vote) = Vote::from_str(&message.text[..]) {
@@ -40,10 +52,6 @@ impl Handler for VoteHandler {
             return vote_results.add_vote(user_id, desired_vote, &chat_room.users);
         }
         None
-    }
-
-    fn on_chat_room_create(&self, chat_room: &mut ChatRoom) {
-        chat_room.type_map.insert::<VoteResults>(VoteResults::new());
     }
 }
 
@@ -106,13 +114,17 @@ impl VoteResults {
             let mut message = String::with_capacity(100);
             for (user_id, vote) in &self.votes {
                 if let Some(ref user) = users.get(user_id) {
-                   message.push_str(&format!("{}: {}", user.first_name, vote.description()));
+                   message.push_str(&format!("{}: {}\n", user.first_name, vote.description()));
                 } else {
                     warn!("unknown user: {:?}, {:?}", &self, users);
-                    message.push_str(&format!("unknown user: {}", vote.description()));
+                    message.push_str(&format!("unknown user: {}\n", vote.description()));
                 }
             }
-            message.push_str(&format!("Собираемся в {}, через {}", desired_time.format("%Y-%m-%d %H:%M:%S"), ::model::sub_formatted(desired_time, ::model::now())));
+            match ::model::format_remaining_time(desired_time) {
+                (None, remaining_time_minutes) =>  message.push_str(&format!("Собираемся через {}", remaining_time_minutes)),
+                (Some(time_formatted), remaining_time_hours_and_minutes) => message.push_str(&format!("Собираемся в {}, через {}", time_formatted, remaining_time_hours_and_minutes))
+            }
+           
             return message;
         }
         "Еще никто не голосовал.".to_owned()
@@ -121,4 +133,83 @@ impl VoteResults {
 
 impl Key for VoteResults {
     type Value = VoteResults;
+}
+
+#[cfg(test)]
+mod tests {
+
+    use model::*;
+    use chat_room::*;
+    use super::*;
+    use handler::vote::VoteResults;
+
+    use handler::traits::*;
+
+    #[test]
+    fn handler_returns_none_when_message_is_not_a_command() {
+        //given
+        let incoming_message = test_incoming_message("just text");
+        let mut chat_room = test_chat_room();
+        let handler = test_handler(&mut chat_room);
+        //when
+        let outgoing_message = handler.handle(&incoming_message, &mut chat_room);
+        //then
+        assert!(outgoing_message.is_none());
+    }
+
+    #[test]
+    fn voiting_not_now_does_not_make_sense_when_no_one_has_voted_yet() {
+        //given
+        let incoming_message = test_incoming_message("/not_now");
+        let mut chat_room = test_chat_room();
+        let handler = test_handler(&mut chat_room);
+        //when
+        let outgoing_message = handler.handle(&incoming_message, &mut chat_room);
+        //then
+        assert_eq!(&outgoing_message.unwrap().text, "Еще никто не голосовал, голосование за откладывание встречи не имеет смысла.");
+    }
+
+    #[test]
+    fn any_message_after_desired_time_resets_vote_results() {
+        //given
+        let incoming_message = test_incoming_message("/not_now");
+        let mut chat_room = test_chat_room();
+        let handler = test_handler(&mut chat_room);
+        {
+            let mut vote_results = chat_room.type_map.get_mut::<VoteResults>().unwrap();
+            vote_results.desired_time = Some(::model::now());
+        }
+        //when
+        handler.handle(&incoming_message, &mut chat_room);
+        //then
+        let vote_results = chat_room.type_map.get_mut::<VoteResults>().unwrap();
+        assert!(vote_results.desired_time.is_none());
+    }
+
+    fn test_incoming_message(text: &str) -> IncomingMessage {
+        IncomingMessage {
+            text: text.to_owned(),
+            time: ::model::now(),
+            from: test_user()
+        }
+    }
+
+    fn test_user() -> User {
+        User {
+        id: Id::new(1),
+        first_name: "test_user_first_name".to_owned(),
+        last_name: None,
+        username: None
+        }
+    }
+
+    fn test_chat_room() -> ChatRoom {
+        ChatRoom::new(Id::new(1))
+    }
+
+    fn test_handler(chat_room: &mut ChatRoom) -> VoteHandler {
+        let handler = VoteHandler::new();
+        chat_room.type_map.insert::<VoteResults>(VoteResults::new());
+        handler
+    }
 }
